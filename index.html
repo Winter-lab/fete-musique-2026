@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fête de la Musique Paris - Master Map V4</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <style>
+        :root {
+            --bg-main: #0f0c1b;
+            --bg-card: #191528;
+            --primary: #8a2387;
+            --secondary: #e94057;
+            --accent: #f27121;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            
+            /* Couleurs des Zones */
+            --color-zone1: #ef4444; /* Rouge - Centre Institutionnel / Culturel */
+            --color-zone2: #a855f7; /* Violet - Open Air / Grands Espaces / Clubs */
+            --color-zone3: #10b981; /* Vert - Quartiers très vivants */
+            --color-zone4: #3b82f6; /* Bleu - Berges / Péniches / Canaux */
+            --color-zone5: #6b7280; /* Gris - Underground / Warehouses / Afters */
+            --color-zone6: #eab308; /* Jaune - À la cool / Street / Bars */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        header h1 { 
+            margin: 0; 
+            font-size: 20px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+        }
+
+        header p { margin: 0; font-size: 13px; color: rgba(255,255,255,0.8); }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 54px);
+            position: relative;
+        }
+
+        /* Sidebar gauche */
+        .sidebar {
+            width: 470px;
+            background-color: var(--bg-main);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Légende Master Map */
+        .master-legend {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 20px;
+        }
+        .legend-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .legend-item {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        #map {
+            flex: 1;
+            height: 100%;
+            background-color: #242426;
+        }
+
+        .arrondissement-group { margin-bottom: 25px; }
+
+        .arrondissement-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent);
+        }
+        .arrondissement-header:hover { background: rgba(255, 255, 255, 0.07); }
+        .arrondissement-header .count {
+            font-size: 11px;
+            background: var(--bg-card);
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: var(--text-muted);
+        }
+
+        /* Event Card */
+        .event-card {
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: rgba(233, 64, 87, 0.3);
+        }
+
+        .event-title {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #fff;
+            padding-right: 20px;
+        }
+
+        .zone-indicator {
+            position: absolute;
+            top: 18px;
+            right: 16px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .event-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+        .event-meta strong { color: rgba(255,255,255,0.7); font-weight: 500; }
+
+        .badge-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            max-width: 210px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .badge-free { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .badge-booking { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .badge-source { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); }
+        
+        .badge-z1 { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-z2 { background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .badge-z3 { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-z4 { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .badge-z5 { background: rgba(156, 163, 175, 0.12); color: #d1d5db; border: 1px solid rgba(156, 163, 175, 0.2); }
+        .badge-z6 { background: rgba(234, 179, 8, 0.12); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.2); }
+
+        .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .btn {
+            flex: 1; padding: 7px 10px; font-size: 11px; font-weight: 600;
+            border-radius: 6px; text-align: center; text-decoration: none;
+            cursor: pointer; border: none; transition: background 0.2s;
+        }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-primary { background: linear-gradient(90deg, var(--secondary), var(--accent)); color: #fff; }
+
+        /* Popups */
+        .leaflet-popup-content-wrapper {
+            background: var(--bg-card) !important; color: var(--text-main) !important;
+            border-radius: 12px !important; padding: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .leaflet-popup-tip { background: var(--bg-card) !important; }
+        .popup-header { font-weight: 700; font-size: 13px; margin-bottom: 6px; color: #fff; }
+        .popup-text { font-size: 12px; color: var(--text-muted); margin: 2px 0; }
+        .popup-link {
+            display: block; text-align: center; background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #fff !important; padding: 5px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 600; margin-top: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column-reverse; height: calc(100vh - 75px); }
+            .sidebar { width: 100%; height: 50%; }
+            #map { height: 50%; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Fête de la Musique - Master Map</h1>
+        <p>54 spots décodés par zone, typologie et vibe</p>
+    </header>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="master-legend">
+                <div class="legend-title">🗺️ Master Map — Logique de Lecture</div>
+                <div class="legend-grid">
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone1)"></span>🔴 Zone 1 - Centre Institutionnel</div>
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone2)"></span>🟣 Zone 2 - Open Air / Grands Espaces</div>
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone3)"></span>🟢 Zone 3 - Quartiers très vivants</div>
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone4)"></span>🔵 Zone 4 - Berges / Péniches / Canaux</div>
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone5)"></span>⚫ Zone 5 - Underground / Warehouses</div>
+                    <div class="legend-item"><span class="dot" style="background:var(--color-zone6)"></span>🟡 Zone 6 - À la cool / Street / Bars</div>
+                </div>
+            </div>
+            
+            <div id="events-sidebar-list"></div>
+        </div>
+        
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        // Master Dataset complété (54 événements au total)
+        const eventsData = [
+            // Zone 75001
+            { id: 1, name: "AFRO LIVE x ADA COLLECTIVE", arr: "75001", address: "10 passage de la Canopée", style: "Afro / House", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8618, lng: 2.3467 },
+            { id: 2, name: "Big Band de Jazz Palais Royal", arr: "75001", address: "Place Colette", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "14:00-16:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8625, lng: 2.3364 },
+            { id: 3, name: "La Place Open Night", arr: "75001", address: "Forum des Halles", style: "Afro / Club", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8615, lng: 2.3449 },
+            // Zone 75002
+            { id: 32, name: "Musique sur le Nil", arr: "75002", address: "Rue du Nil", style: "Live / DJ sets", zone: 1, vibe: "STRUCTURÉ", time: "12:00-18:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8669, lng: 2.3481 },
+            // Zone 75003
+            { id: 4, name: "Place République Live Stage", arr: "75003", address: "Place de la République", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:00", req: "Non", src: "paris.fr", url: "", lat: 48.8675, lng: 2.3638 },
+            // Zone 75004
+            { id: 5, name: "Le Marais Courtyard Sessions", arr: "75004", address: "Le Marais (Cours intérieures)", style: "Jazz / Indie", zone: 1, vibe: "STRUCTURÉ", time: "17:00-23:00", req: "Non", src: "lieu", url: "", lat: 48.8576, lng: 2.3592 },
+            { id: 33, name: "Musée Carnavalet x Recherche et Développement", arr: "75004", address: "16 rue des Francs-Bourgeois", style: "Electro / Art sound", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8571, lng: 2.3624 },
+            { id: 44, name: "Spotify Fan de la Musique", arr: "75004", address: "Place de la Bastille (Côté 4e)", style: "Multi-genre / Event", zone: 2, vibe: "STRUCTURE / OPEN AIR", time: "18:00-00:00", req: "Oui", src: "Shotgun", url: "https://shotgun.live/fr/events/spotify-fan-de-la-musique", lat: 48.8532, lng: 2.3685 },
+            // Zone 75005
+            { id: 6, name: "Institut du Monde Arabe Live", arr: "75005", address: "1 rue des Fossés St Bernard", style: "Contemporain", zone: 1, vibe: "STRUCTURÉ", time: "18:00-21:30", req: "Non", src: "paris.fr", url: "", lat: 48.8491, lng: 2.3573 },
+            { id: 7, name: "IMA Courtyard Sessions", arr: "75005", address: "Parvis de l'IMA", style: "World Music LIVE", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "18:00-23:00", req: "Non", src: "lieu", url: "", lat: 48.8488, lng: 2.3578 },
+            // Zone 75006
+            { id: 34, name: "Paris Worldwide Launch Party", arr: "75006", address: "Location TBA Paris (Secteur 6e)", style: "House / Electronic", zone: 6, vibe: "À LA COOL", time: "17:00-20:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8512, lng: 2.3331 },
+            // Zone 75007
+            { id: 8, name: "Église Saint-Jean Concerts", arr: "75007", address: "147 rue de Grenelle", style: "Classique", zone: 1, vibe: "STRUCTURÉ", time: "16:00-20:30", req: "Non", src: "paris.fr", url: "", lat: 48.8582, lng: 2.3061 },
+            { id: 9, name: "Invalides Fanfares", arr: "75007", address: "Esplanade des Invalides", style: "Fanfares", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "paris.fr", url: "", lat: 48.8594, lng: 2.3125 },
+            // Zone 75008
+            { id: 10, name: "Parc Monceau Jazz", arr: "75008", address: "Parc Monceau", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "16:00-21:00", req: "Non", src: "paris.fr", url: "", lat: 48.8796, lng: 2.3089 },
+            // Zone 75009
+            { id: 35, name: "Because Music x Hôtel Amour Paris", arr: "75009", address: "8 rue de Navarin", style: "Pop / Electronic / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "16:00-23:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8794, lng: 2.3375 },
+            { id: 45, name: "Marilou – Fête de la Musique", arr: "75009", address: "46 rue de la Victoire", style: "Live / Concert", zone: 6, vibe: "À LA COOL", time: "15:00-19:00", req: "Non", src: "Infolocale", url: "https://www.infolocale.fr/evenements/evenement-paris-concert-spectacle-musical-marilou-fete-la-musique-709446160", lat: 48.8744, lng: 2.3358 },
+            // Zone 75010
+            { id: 11, name: "Canal Saint-Martin Street Sets", arr: "75010", address: "Canal Saint-Martin", style: "DJ sets", zone: 4, vibe: "À LA COOL / CANAL", time: "16:00-02:00", req: "Non", src: "terrain", url: "", lat: 48.8714, lng: 2.3644 },
+            { id: 12, name: "Rue du Faubourg St Denis Jam", arr: "75010", address: "Rue du Faubourg St Denis", style: "Live street", zone: 6, vibe: "À LA COOL", time: "18:00-00:00", req: "Non", src: "terrain", url: "", lat: 48.8732, lng: 2.3541 },
+            { id: 36, name: "Please Wait Gallery x Chambre Noire", arr: "75010", address: "5 rue de la Grange aux Belles", style: "Electronic / Ambient", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8741, lng: 2.3672 },
+            // Zone 75011
+            { id: 13, name: "Oberkampf Street Party", arr: "75011", address: "Rue Oberkampf", style: "Street techno / rap", zone: 3, vibe: "À LA COOL / QUARTIER VIVANT", time: "18:00-03:00", req: "Non", src: "terrain", url: "", lat: 48.8648, lng: 2.3732 },
+            { id: 14, name: "Bastille Open Air", arr: "75011", address: "Place de la Bastille", style: "DJ sets", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "paris.fr", url: "", lat: 48.8531, lng: 2.3691 },
+            { id: 37, name: "La Fine Mousse", arr: "75011", address: "6 avenue Jean Aicard", style: "Live / Jazz / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8641, lng: 2.3831 },
+            { id: 38, name: "Ici C’est Paris x Le Consulat", arr: "75011", address: "14 avenue Parmentier", style: "House / Disco", zone: 1, vibe: "STRUCTURÉ", time: "14:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8619, lng: 2.3789 },
+            { id: 39, name: "Halfpipe Records x Dance Discs", arr: "75011", address: "110 rue Camelot", style: "Electronic / Club", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:30", req: "Non", src: "Utilisateur", url: "", lat: 48.8601, lng: 2.3712 },
+            // Zone 75012
+            { id: 15, name: "Supersonic Club", arr: "75012", address: "9 rue Biscornet", style: "Rock", zone: 5, vibe: "STRUCTURÉ / INDIE", time: "19:00-05:00", req: "Non", src: "supersonic", url: "", lat: 48.8496, lng: 2.3697 },
+            { id: 16, name: "Mazette Barge Party", arr: "75012", address: "Port de la Râpée", style: "House", zone: 4, vibe: "PÉNICHE / STRUCTURÉ", time: "18:00-05:00", req: "Oui", src: "lieu", url: "", lat: 48.8427, lng: 2.3691 },
+            { id: 30, name: "Rossli – Fête de la Musique", arr: "75012", address: "95 rue de Charenton", style: "House / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "17:00-01:00", req: "Non", src: "Instagram", url: "https://www.instagram.com/p/DZrxYXADNh-/", lat: 48.8481, lng: 2.3768 },
+            { id: 40, name: "A1 Records Paris", arr: "75012", address: "42 rue de Montreuil", style: "House / Vinyl DJ set", zone: 1, vibe: "STRUCTURÉ", time: "15:30-00:30", req: "Non", src: "Utilisateur", url: "", lat: 48.8502, lng: 2.3851 },
+            // Zone 75013
+            { id: 17, name: "Petit Bain – Fête de la Musique (Jet Lag)", arr: "75013", address: "7 port de la Gare", style: "Indie / DJ sets", zone: 4, vibe: "PÉNICHE / STRUCTURÉ", time: "Horaire non précisé", req: "Oui", src: "Petit Bain", url: "https://petitbain.org/evenement/jet-lag-fdm/", lat: 48.8341, lng: 2.3736 },
+            { id: 18, name: "Seine Riverside Jam", arr: "75013", address: "Berges de Seine", style: "Live", zone: 4, vibe: "À LA COOL / BERGES", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8315, lng: 2.3761 },
+            { id: 47, name: "Open Air Électro par Aztechno", arr: "75013", address: "25 rue de la Butte-aux-Cailles", style: "Techno / Electro DJ sets", zone: 6, vibe: "À LA COOL", time: "16:00-00:00", req: "Non", src: "Aztechno", url: "", lat: 48.8288, lng: 2.3499 },
+            { id: 48, name: "Les Punks Parisiens prennent l'air", arr: "75013", address: "Spot 13 (Allée d'Ivry)", style: "Punk Rock Live (15 groupes)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "13:00-23:30", req: "Non", src: "Spot 13", url: "", lat: 48.8234, lng: 2.3767 },
+            // Zone 75014
+            { id: 49, name: "Concert de Musiques Traditionnelles", arr: "75014", address: "Kiosque du Parc Montsouris (2 rue Gazan)", style: "Folk / Traditionnel", zone: 6, vibe: "À LA COOL", time: "Après-midi", req: "Non", src: "Mazurcade", url: "", lat: 48.8224, lng: 2.3381 },
+            { id: 50, name: "Gospel sur le Parvis", arr: "75014", address: "Parvis de la Mairie du 14e", style: "Gospel (Hope Gospel Singers)", zone: 1, vibe: "STRUCTURÉ", time: "20:00-21:30", req: "Non", src: "Mairie 14e", url: "", lat: 48.8331, lng: 2.3256 },
+            // Zone 75015
+            { id: 51, name: "CB Festival par VL Média", arr: "75015", address: "Parvis de la Mairie du 15e (31 rue Péclet)", style: "Electro / Tech (Tony Romera, Space 92)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:30", req: "Oui", src: "VL Média", url: "", lat: 48.8412, lng: 2.2998 },
+            { id: 52, name: "Fête d'été du Quartier Balard", arr: "75015", address: "Jardin Caroline Aigle", style: "Format Familial / Chorale", zone: 6, vibe: "À LA COOL", time: "15:00-18:00", req: "Non", src: "Makabane", url: "", lat: 48.8367, lng: 2.2748 },
+            { id: 53, name: "Lancement de 'Paris en Seine'", arr: "75015", address: "Bords de Seine du 15e", style: "Concerts & Carnaval Tropical", zone: 4, vibe: "BERGES & CANAUX", time: "Tout l'été", req: "Non", src: "Ville", url: "", lat: 48.8465, lng: 2.2798 },
+            // Zone 75016
+            { id: 41, name: "Joe & The Juice x Ed Banger Records", arr: "75016", address: "53 avenue Kléber", style: "Electro / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8688, lng: 2.2902 },
+            // Zone 75019
+            { id: 19, name: "Buttes Chaumont Cookie Records", arr: "75019", address: "Parc des Buttes Chaumont", style: "House", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "12:00-23:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8812, lng: 2.3846 },
+            { id: 20, name: "La Rotonde Stalingrad", arr: "75019", address: "Place de Stalingrad", style: "Techno", zone: 3, vibe: "STRUCTURÉ", time: "16:00-02:00", req: "Non", src: "lieu", url: "", lat: 48.8828, lng: 2.3694 },
+            { id: 21, name: "La Villette Square", arr: "75019", address: "Parc de la Villette", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-23:00", req: "Non", src: "paris.fr", url: "", lat: 48.8938, lng: 2.3902 },
+            { id: 42, name: "Cookie Records x Pavillon Puebla", arr: "75019", address: "Parc des Buttes-Chaumont (Pavillon Puebla)", style: "House / Disco / Open air", zone: 1, vibe: "STRUCTURÉ", time: "13:00-00:00", req: "Oui", src: "Utilisateur", url: "", lat: 48.8804, lng: 2.3831 },
+            // Zone 75020
+            { id: 22, name: "Belleville Open Mic", arr: "75020", address: "Place de Belleville", style: "Rap / Jam", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8728, lng: 2.3782 },
+            { id: 23, name: "Ménilmontant Street Sound", arr: "75020", address: "Rue Oberkampf (Côté 20e)", style: "Rock / Live", zone: 6, vibe: "À LA COOL", time: "18:00-01:00", req: "Non", src: "terrain", url: "", lat: 48.8661, lng: 2.3887 },
+            
+            // Banlieues & TBA Centraux
+            { id: 43, name: "Radio Flouka x 306 Sound System", arr: "00000", address: "Location TBA (Annonce imminente)", style: "Sound system / Afro / Global", zone: 6, vibe: "À LA COOL", time: "Horaire non précisé", req: "Oui", src: "Shotgun", url: "https://shotgun.live/fr/events/radio-flouka-x-306-sound-system-community-gathering", lat: 48.8566, lng: 2.3522 },
+            { id: 24, name: "La Défense After Sounds", arr: "92000", address: "Parvis de La Défense", style: "Electro", zone: 2, vibe: "STRUCTURÉ / OPEN AIR", time: "18:00-02:00", req: "Non", src: "lieu", url: "", lat: 48.8927, lng: 2.2381 },
+            { id: 25, name: "Nanterre Open Stage", arr: "92000", address: "Nanterre Centre", style: "Live", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8916, lng: 2.2045 },
+            { id: 54, name: "Concerts Multiscènes de la Ville", arr: "92100", address: "Grand'Place / Espace Landowski / Parc de Billancourt", style: "Pop, Rock, Classique, Jazz", zone: 2, vibe: "OPEN AIR", time: "Après-midi & Soirée", req: "Non", src: "Conservatoire", url: "", lat: 48.8364, lng: 2.2389 },
+            { id: 55, name: "Fête de la Musique à l'Église Sainte-Cécile", arr: "92100", address: "Église Sainte-Cécile de Boulogne", style: "Fanfare, Pop-Jazz, Set Électro (20h15) & Karaoké", zone: 1, vibe: "STRUCTURÉ", time: "Journée & Soirée", req: "Non", src: "Paroisse", url: "", lat: 48.8441, lng: 2.2471 },
+            { id: 26, name: "Montreuil Backyard Sounds", arr: "93100", address: "Montreuil (Cours partagées)", style: "Hip-hop / Afro", zone: 6, vibe: "À LA COOL", time: "18:00-02:00", req: "Non", src: "terrain", url: "", lat: 48.8624, lng: 2.4411 },
+            { id: 27, name: "Aubervilliers Street Jam", arr: "93300", address: "Canal Saint-Denis (Aubervilliers)", style: "Hiphop", zone: 4, vibe: "À LA COOL / CANAL", time: "17:00-01:00", req: "Non", src: "terrain", url: "", lat: 48.9118, lng: 2.3721 },
+            { id: 28, name: "Saint-Ouen Warehouse Set", arr: "93400", address: "Saint-Ouen (Docks/Warehouse)", style: "Techno", zone: 5, vibe: "UNDERGROUND", time: "20:00-06:00", req: "Oui", src: "lieu", url: "", lat: 48.9112, lng: 2.3338 },
+            { id: 29, name: "Dock B Pantin", arr: "93500", address: "1 place de la Pointe (Pantin)", style: "Electro", zone: 3, vibe: "STRUCTURÉ", time: "17:00-02:00", req: "Oui", src: "lieu", url: "", lat: 48.8929, lng: 2.4082 },
+            { id: 31, name: "Pantin Canal Zone", arr: "93500", address: "Canal de l’Ourcq", style: "DJ sets", zone: 4, vibe: "OPEN AIR / À LA COOL", time: "17:00-02:00", req: "Non", src: "terrain", url: "", lat: 48.8935, lng: 2.4145 },
+            { id: 46, name: "Ivry Open Mic", arr: "94200", address: "Ivry Centre", style: "Rap / Live", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8114, lng: 2.3876 }
+        ];
+
+        const zoneColors = {
+            1: "#ef4444",
+            2: "#a855f7",
+            3: "#10b981",
+            4: "#3b82f6",
+            5: "#6b7280",
+            6: "#eab308"
+        };
+
+        // Initialisation Map (Centre focalisé sur Paris)
+        const map = L.map('map', { zoomControl: false }).setView([48.855, 2.33], 12);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTODB', maxZoom: 20
+        }).addTo(map);
+
+        const markers = {};
+
+        // Injection des Pins Custom SVG colorés selon la zone
+        eventsData.forEach(event => {
+            const hexColor = zoneColors[event.zone];
+            const customMarkerSvg = `
+                <svg width="26" height="36" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 24 14 24s14-13.5 14-24c0-7.73-6.27-14-14-14zm0 19c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z" fill="${hexColor}"/>
+                </svg>`;
+
+            const customIcon = L.divIcon({
+                html: customMarkerSvg, background: 'transparent',
+                iconSize: [26, 36], iconAnchor: [13, 36], popupAnchor: [0, -32],
+                className: 'custom-pin'
+            });
+
+            const popupContent = `
+                <div class="popup-header" style="border-left: 3px solid ${hexColor}; padding-left:6px; font-weight:700;">${event.name}</div>
+                <div class="popup-text">🎵 <b>Style :</b> ${event.style}</div>
+                <div class="popup-text">🕒 <b>Horaire :</b> ${event.time}</div>
+                <div class="popup-text" style="color:${hexColor}; font-weight:700; margin-top:4px;">🔮 Zone ${event.zone} — ${event.vibe}</div>
+                <div class="popup-text" style="font-size:10px; color:#aaa; margin-top:2px;">📍 ${event.address}</div>
+                ${event.url ? `<a class="popup-link" href="${event.url}" target="_blank">Lien vers l'event</a>` : ''}
+            `;
+            
+            markers[event.id] = L.marker([event.lat, event.lng], { icon: customIcon }).addTo(map).bindPopup(popupContent);
+        });
+
+        function focusOnEvent(eventId, lat, lng) {
+            map.setView([lat, lng], 15);
+            markers[eventId].openPopup();
+        }
+
+        function focusOnSector(lat, lng) {
+            map.setView([lat, lng], 13);
+        }
+
+        // Configuration de la taxonomie des libellés de quartiers
+        const listContainer = document.getElementById('events-sidebar-list');
+        const groupedEvents = {};
+
+        const labelMap = {
+            "00000": "🔍 Lieux non communiqués (TBA)",
+            "75001": "Paris 1er (Halles / Palais Royal)",
+            "75002": "Paris 2e (Sentier / Rue du Nil)",
+            "75003": "Paris 3e (République)",
+            "75004": "Paris 4e (Le Marais / Bastille)",
+            "75005": "Paris 5e (Quartier Latin / IMA)",
+            "75006": "Paris 6e (Saint-Germain)",
+            "75007": "Paris 7e (Invalides / Grenelle)",
+            "75008": "Paris 8e (Monceau)",
+            "75009": "Paris 9e (Pigalle / Victoire)",
+            "75010": "Paris 10e (Canal St-Martin / St-Denis)",
+            "75011": "Paris 11e (Bastille / Oberkampf)",
+            "75012": "Paris 12e (Bercy / Râpée / Charenton)",
+            "75013": "Paris 13e (Bibliothèque / Berges / Butte-aux-Cailles)",
+            "75014": "Paris 14e (Montsouris / Mairie)",
+            "75015": "Paris 15e (Mairie / Balard)",
+            "75016": "Paris 16e (Kléber)",
+            "75019": "Paris 19e (Buttes-Chaumont / Villette)",
+            "75020": "Paris 20e (Belleville / Ménilmontant)",
+            "92000": "La Défense / Nanterre (92)",
+            "92100": "Boulogne-Billancourt (92)",
+            "93100": "Montreuil (93)",
+            "93300": "Aubervilliers (93)",
+            "93400": "Saint-Ouen (93)",
+            "93500": "Pantin (93)",
+            "94200": "Ivry-sur-Seine (94)"
+        };
+
+        eventsData.forEach(event => {
+            const locKey = labelMap[event.arr] || `Secteur ${event.arr}`;
+            if (!groupedEvents[locKey]) {
+                groupedEvents[locKey] = { name: locKey, events: [], lat: event.lat, lng: event.lng };
+            }
+            groupedEvents[locKey].events.push(event);
+        });
+
+        // Génération HTML Dynamique du flux de gauche (tri par ordre de clés)
+        Object.keys(groupedEvents).sort().forEach(key => {
+            const locData = groupedEvents[key];
+            const groupSection = document.createElement('div');
+            groupSection.className = 'arrondissement-group';
+
+            const header = document.createElement('div');
+            header.className = 'arrondissement-header';
+            header.innerHTML = `<span>📍 ${locData.name}</span> <span class="count">${locData.events.length} spot${locData.events.length > 1 ? 's' : ''}</span>`;
+            header.onclick = () => focusOnSector(locData.lat, locData.lng);
+            groupSection.appendChild(header);
+
+            locData.events.forEach(event => {
+                const isBooking = event.req.toLowerCase().includes('oui') || event.req.toLowerCase().includes('shotgun') || event.req.toLowerCase().includes('ticket');
+                const badgeLabel = isBooking ? "Inscription / Ticket requis" : "Entrée Libre";
+                const badgeClass = isBooking ? "badge-booking" : "badge-free";
+                const zoneHex = zoneColors[event.zone];
+
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.onclick = (e) => {
+                    if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                        focusOnEvent(event.id, event.lat, event.lng);
+                    }
+                };
+
+                card.innerHTML = `
+                    <div class="zone-indicator" style="background:${zoneHex}; box-shadow: 0 0 8px ${zoneHex};"></div>
+                    <div class="event-title">${event.name}</div>
+                    <div class="event-meta"><strong>🎵 Style :</strong> ${event.style}</div>
+                    <div class="event-meta"><strong>🕒 Horaire :</strong> ${event.time}</div>
+                    <div class="event-meta"><strong>📍 Lieu :</strong> ${event.address}</div>
+                    <div class="badge-container">
+                        <span class="badge ${badgeClass}">${badgeLabel}</span>
+                        <span class="badge badge-z${event.zone}">Zone ${event.zone} — ${event.vibe}</span>
+                        <span class="badge badge-source" title="${event.src}">via ${event.src.replace('https://', '').split('/')[0]}</span>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" onclick="focusOnEvent(${event.id}, ${event.lat}, ${event.lng})">🎯 Localiser</button>
+                        ${event.url ? `<a class="btn btn-primary" href="${event.url}" target="_blank">🔗 Accéder au lien</a>` : ''}
+                    </div>
+                `;
+                groupSection.appendChild(card);
+            });
+
+            listContainer.appendChild(groupSection);
+        });
+    </script>
+</body>
+</html>
