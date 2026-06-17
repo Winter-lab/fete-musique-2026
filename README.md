@@ -1,6 +1,6 @@
-# ⚡ Fête de la Musique Paris & Grand Paris — Master Map ⚡
+# Fête de la Musique Paris & Grand Paris — Master Map
 
-Bienvenue sur le dépôt de la **Master Map V3**, une application cartographique interactive conçue avec **Leaflet.js** pour centraliser, décoder et filtrer les meilleurs spots de la Fête de la Musique à Paris et dans sa proche banlieue.
+Bienvenue sur le dépôt de la **Master Map V3**, une application cartographique interactive conçue pour centraliser, décoder et filtrer les meilleurs spots de la Fête de la Musique à Paris et dans sa proche banlieue.
 
 L'objectif de ce projet est de dépasser les listes textuelles illisibles pour proposer une expérience visuelle et dynamique basée sur une **taxonomie précise en 6 Zones de vibes**.
 
