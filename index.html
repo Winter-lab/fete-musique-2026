@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fête de la Musique Paris - Master Map V4</title>
     
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     
     <style>
@@ -251,12 +252,13 @@
 <body>
 
     <header>
-        <h1>Fête de la Musique - Master Map</h1>
+        <h1>⚡ Fête de la Musique - Master Map ⚡</h1>
         <p>54 spots décodés par zone, typologie et vibe</p>
     </header>
 
     <div class="app-container">
         <div class="sidebar">
+            <!-- Bloc Logique de Lecture -->
             <div class="master-legend">
                 <div class="legend-title">🗺️ Master Map — Logique de Lecture</div>
                 <div class="legend-grid">
@@ -275,78 +277,79 @@
         <div id="map"></div>
     </div>
 
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
-        // Master Dataset complété (54 événements au total)
+        // Master Dataset complété avec les liens de redirection
         const eventsData = [
             // Zone 75001
-            { id: 1, name: "AFRO LIVE x ADA COLLECTIVE", arr: "75001", address: "10 passage de la Canopée", style: "Afro / House", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8618, lng: 2.3467 },
-            { id: 2, name: "Big Band de Jazz Palais Royal", arr: "75001", address: "Place Colette", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "14:00-16:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8625, lng: 2.3364 },
-            { id: 3, name: "La Place Open Night", arr: "75001", address: "Forum des Halles", style: "Afro / Club", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8615, lng: 2.3449 },
+            { id: 1, name: "AFRO LIVE x ADA COLLECTIVE", arr: "75001", address: "10 passage de la Canopée", style: "Afro / House", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "https://shotgun.live/fr/events/afro-live-ada-collective-fete-de-la-musique", lat: 48.8618, lng: 2.3467 },
+            { id: 2, name: "Big Band de Jazz Palais Royal", arr: "75001", address: "Place Colette", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "14:00-16:00", req: "Oui", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8625, lng: 2.3364 },
+            { id: 3, name: "La Place Open Night", arr: "75001", address: "Forum des Halles", style: "Afro / Club", zone: 1, vibe: "STRUCTURÉ", time: "00:00-05:00", req: "Oui", src: "paris.fr", url: "https://shotgun.live/fr/venues/la-place", lat: 48.8615, lng: 2.3449 },
             // Zone 75002
-            { id: 32, name: "Musique sur le Nil", arr: "75002", address: "Rue du Nil", style: "Live / DJ sets", zone: 1, vibe: "STRUCTURÉ", time: "12:00-18:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8669, lng: 2.3481 },
+            { id: 32, name: "Musique sur le Nil", arr: "75002", address: "Rue du Nil", style: "Live / DJ sets", zone: 1, vibe: "STRUCTURÉ", time: "12:00-18:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8669, lng: 2.3481 },
             // Zone 75003
-            { id: 4, name: "Place République Live Stage", arr: "75003", address: "Place de la République", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:00", req: "Non", src: "paris.fr", url: "", lat: 48.8675, lng: 2.3638 },
+            { id: 4, name: "Place République Live Stage", arr: "75003", address: "Place de la République", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:00", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8675, lng: 2.3638 },
             // Zone 75004
-            { id: 5, name: "Le Marais Courtyard Sessions", arr: "75004", address: "Le Marais (Cours intérieures)", style: "Jazz / Indie", zone: 1, vibe: "STRUCTURÉ", time: "17:00-23:00", req: "Non", src: "lieu", url: "", lat: 48.8576, lng: 2.3592 },
-            { id: 33, name: "Musée Carnavalet x Recherche et Développement", arr: "75004", address: "16 rue des Francs-Bourgeois", style: "Electro / Art sound", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8571, lng: 2.3624 },
+            { id: 5, name: "Le Marais Courtyard Sessions", arr: "75004", address: "Le Marais (Cours intérieures)", style: "Jazz / Indie", zone: 1, vibe: "STRUCTURÉ", time: "17:00-23:00", req: "Non", src: "lieu", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8576, lng: 2.3592 },
+            { id: 33, name: "Musée Carnavalet x Recherche et Développement", arr: "75004", address: "16 rue des Francs-Bourgeois", style: "Electro / Art sound", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8571, lng: 2.3624 },
             { id: 44, name: "Spotify Fan de la Musique", arr: "75004", address: "Place de la Bastille (Côté 4e)", style: "Multi-genre / Event", zone: 2, vibe: "STRUCTURE / OPEN AIR", time: "18:00-00:00", req: "Oui", src: "Shotgun", url: "https://shotgun.live/fr/events/spotify-fan-de-la-musique", lat: 48.8532, lng: 2.3685 },
             // Zone 75005
-            { id: 6, name: "Institut du Monde Arabe Live", arr: "75005", address: "1 rue des Fossés St Bernard", style: "Contemporain", zone: 1, vibe: "STRUCTURÉ", time: "18:00-21:30", req: "Non", src: "paris.fr", url: "", lat: 48.8491, lng: 2.3573 },
-            { id: 7, name: "IMA Courtyard Sessions", arr: "75005", address: "Parvis de l'IMA", style: "World Music LIVE", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "18:00-23:00", req: "Non", src: "lieu", url: "", lat: 48.8488, lng: 2.3578 },
+            { id: 6, name: "Institut du Monde Arabe Live", arr: "75005", address: "1 rue des Fossés St Bernard", style: "Contemporain", zone: 1, vibe: "STRUCTURÉ", time: "18:00-21:30", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8491, lng: 2.3573 },
+            { id: 7, name: "IMA Courtyard Sessions", arr: "75005", address: "Parvis de l'IMA", style: "World Music LIVE", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "18:00-23:00", req: "Non", src: "lieu", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8488, lng: 2.3578 },
             // Zone 75006
-            { id: 34, name: "Paris Worldwide Launch Party", arr: "75006", address: "Location TBA Paris (Secteur 6e)", style: "House / Electronic", zone: 6, vibe: "À LA COOL", time: "17:00-20:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8512, lng: 2.3331 },
+            { id: 34, name: "Paris Worldwide Launch Party", arr: "75006", address: "Location TBA Paris (Secteur 6e)", style: "House / Electronic", zone: 6, vibe: "À LA COOL", time: "17:00-20:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8512, lng: 2.3331 },
             // Zone 75007
-            { id: 8, name: "Église Saint-Jean Concerts", arr: "75007", address: "147 rue de Grenelle", style: "Classique", zone: 1, vibe: "STRUCTURÉ", time: "16:00-20:30", req: "Non", src: "paris.fr", url: "", lat: 48.8582, lng: 2.3061 },
-            { id: 9, name: "Invalides Fanfares", arr: "75007", address: "Esplanade des Invalides", style: "Fanfares", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "paris.fr", url: "", lat: 48.8594, lng: 2.3125 },
+            { id: 8, name: "Église Saint-Jean Concerts", arr: "75007", address: "147 rue de Grenelle", style: "Classique", zone: 1, vibe: "STRUCTURÉ", time: "16:00-20:30", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8582, lng: 2.3061 },
+            { id: 9, name: "Invalides Fanfares", arr: "75007", address: "Esplanade des Invalides", style: "Fanfares", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8594, lng: 2.3125 },
             // Zone 75008
-            { id: 10, name: "Parc Monceau Jazz", arr: "75008", address: "Parc Monceau", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "16:00-21:00", req: "Non", src: "paris.fr", url: "", lat: 48.8796, lng: 2.3089 },
+            { id: 10, name: "Parc Monceau Jazz", arr: "75008", address: "Parc Monceau", style: "Jazz", zone: 1, vibe: "STRUCTURÉ", time: "16:00-21:00", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8796, lng: 2.3089 },
             // Zone 75009
-            { id: 35, name: "Because Music x Hôtel Amour Paris", arr: "75009", address: "8 rue de Navarin", style: "Pop / Electronic / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "16:00-23:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8794, lng: 2.3375 },
+            { id: 35, name: "Because Music x Hôtel Amour Paris", arr: "75009", address: "8 rue de Navarin", style: "Pop / Electronic / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "16:00-23:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8794, lng: 2.3375 },
             { id: 45, name: "Marilou – Fête de la Musique", arr: "75009", address: "46 rue de la Victoire", style: "Live / Concert", zone: 6, vibe: "À LA COOL", time: "15:00-19:00", req: "Non", src: "Infolocale", url: "https://www.infolocale.fr/evenements/evenement-paris-concert-spectacle-musical-marilou-fete-la-musique-709446160", lat: 48.8744, lng: 2.3358 },
             // Zone 75010
-            { id: 11, name: "Canal Saint-Martin Street Sets", arr: "75010", address: "Canal Saint-Martin", style: "DJ sets", zone: 4, vibe: "À LA COOL / CANAL", time: "16:00-02:00", req: "Non", src: "terrain", url: "", lat: 48.8714, lng: 2.3644 },
-            { id: 12, name: "Rue du Faubourg St Denis Jam", arr: "75010", address: "Rue du Faubourg St Denis", style: "Live street", zone: 6, vibe: "À LA COOL", time: "18:00-00:00", req: "Non", src: "terrain", url: "", lat: 48.8732, lng: 2.3541 },
-            { id: 36, name: "Please Wait Gallery x Chambre Noire", arr: "75010", address: "5 rue de la Grange aux Belles", style: "Electronic / Ambient", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8741, lng: 2.3672 },
+            { id: 11, name: "Canal Saint-Martin Street Sets", arr: "75010", address: "Canal Saint-Martin", style: "DJ sets", zone: 4, vibe: "À LA COOL / CANAL", time: "16:00-02:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8714, lng: 2.3644 },
+            { id: 12, name: "Rue du Faubourg St Denis Jam", arr: "75010", address: "Rue du Faubourg St Denis", style: "Live street", zone: 6, vibe: "À LA COOL", time: "18:00-00:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8732, lng: 2.3541 },
+            { id: 36, name: "Please Wait Gallery x Chambre Noire", arr: "75010", address: "5 rue de la Grange aux Belles", style: "Electronic / Ambient", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8741, lng: 2.3672 },
             // Zone 75011
-            { id: 13, name: "Oberkampf Street Party", arr: "75011", address: "Rue Oberkampf", style: "Street techno / rap", zone: 3, vibe: "À LA COOL / QUARTIER VIVANT", time: "18:00-03:00", req: "Non", src: "terrain", url: "", lat: 48.8648, lng: 2.3732 },
-            { id: 14, name: "Bastille Open Air", arr: "75011", address: "Place de la Bastille", style: "DJ sets", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "paris.fr", url: "", lat: 48.8531, lng: 2.3691 },
-            { id: 37, name: "La Fine Mousse", arr: "75011", address: "6 avenue Jean Aicard", style: "Live / Jazz / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8641, lng: 2.3831 },
-            { id: 38, name: "Ici C’est Paris x Le Consulat", arr: "75011", address: "14 avenue Parmentier", style: "House / Disco", zone: 1, vibe: "STRUCTURÉ", time: "14:00-02:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8619, lng: 2.3789 },
-            { id: 39, name: "Halfpipe Records x Dance Discs", arr: "75011", address: "110 rue Camelot", style: "Electronic / Club", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:30", req: "Non", src: "Utilisateur", url: "", lat: 48.8601, lng: 2.3712 },
+            { id: 13, name: "Oberkampf Street Party", arr: "75011", address: "Rue Oberkampf", style: "Street techno / rap", zone: 3, vibe: "À LA COOL / QUARTIER VIVANT", time: "18:00-03:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8648, lng: 2.3732 },
+            { id: 14, name: "Bastille Open Air", arr: "75011", address: "Place de la Bastille", style: "DJ sets", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "16:00-00:00", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8531, lng: 2.3691 },
+            { id: 37, name: "La Fine Mousse", arr: "75011", address: "6 avenue Jean Aicard", style: "Live / Jazz / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "18:00-02:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8641, lng: 2.3831 },
+            { id: 38, name: "Ici C’est Paris x Le Consulat", arr: "75011", address: "14 avenue Parmentier", style: "House / Disco", zone: 1, vibe: "STRUCTURÉ", time: "14:00-02:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8619, lng: 2.3789 },
+            { id: 39, name: "Halfpipe Records x Dance Discs", arr: "75011", address: "110 rue Camelot", style: "Electronic / Club", zone: 1, vibe: "STRUCTURÉ", time: "16:00-00:30", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8601, lng: 2.3712 },
             // Zone 75012
-            { id: 15, name: "Supersonic Club", arr: "75012", address: "9 rue Biscornet", style: "Rock", zone: 5, vibe: "STRUCTURÉ / INDIE", time: "19:00-05:00", req: "Non", src: "supersonic", url: "", lat: 48.8496, lng: 2.3697 },
-            { id: 16, name: "Mazette Barge Party", arr: "75012", address: "Port de la Râpée", style: "House", zone: 4, vibe: "PÉNICHE / STRUCTURÉ", time: "18:00-05:00", req: "Oui", src: "lieu", url: "", lat: 48.8427, lng: 2.3691 },
+            { id: 15, name: "Supersonic Club", arr: "75012", address: "9 rue Biscornet", style: "Rock", zone: 5, vibe: "STRUCTURÉ / INDIE", time: "19:00-05:00", req: "Non", src: "supersonic", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8496, lng: 2.3697 },
+            { id: 16, name: "Mazette Barge Party", arr: "75012", address: "Port de la Râpée", style: "House", zone: 4, vibe: "PÉNICHE / STRUCTURÉ", time: "18:00-05:00", req: "Oui", src: "lieu", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8427, lng: 2.3691 },
             { id: 30, name: "Rossli – Fête de la Musique", arr: "75012", address: "95 rue de Charenton", style: "House / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "17:00-01:00", req: "Non", src: "Instagram", url: "https://www.instagram.com/p/DZrxYXADNh-/", lat: 48.8481, lng: 2.3768 },
-            { id: 40, name: "A1 Records Paris", arr: "75012", address: "42 rue de Montreuil", style: "House / Vinyl DJ set", zone: 1, vibe: "STRUCTURÉ", time: "15:30-00:30", req: "Non", src: "Utilisateur", url: "", lat: 48.8502, lng: 2.3851 },
+            { id: 40, name: "A1 Records Paris", arr: "75012", address: "42 rue de Montreuil", style: "House / Vinyl DJ set", zone: 1, vibe: "STRUCTURÉ", time: "15:30-00:30", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8502, lng: 2.3851 },
             // Zone 75013
             { id: 17, name: "Petit Bain – Fête de la Musique (Jet Lag)", arr: "75013", address: "7 port de la Gare", style: "Indie / DJ sets", zone: 4, vibe: "PÉNICHE / STRUCTURÉ", time: "Horaire non précisé", req: "Oui", src: "Petit Bain", url: "https://petitbain.org/evenement/jet-lag-fdm/", lat: 48.8341, lng: 2.3736 },
-            { id: 18, name: "Seine Riverside Jam", arr: "75013", address: "Berges de Seine", style: "Live", zone: 4, vibe: "À LA COOL / BERGES", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8315, lng: 2.3761 },
-            { id: 47, name: "Open Air Électro par Aztechno", arr: "75013", address: "25 rue de la Butte-aux-Cailles", style: "Techno / Electro DJ sets", zone: 6, vibe: "À LA COOL", time: "16:00-00:00", req: "Non", src: "Aztechno", url: "", lat: 48.8288, lng: 2.3499 },
-            { id: 48, name: "Les Punks Parisiens prennent l'air", arr: "75013", address: "Spot 13 (Allée d'Ivry)", style: "Punk Rock Live (15 groupes)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "13:00-23:30", req: "Non", src: "Spot 13", url: "", lat: 48.8234, lng: 2.3767 },
+            { id: 18, name: "Seine Riverside Jam", arr: "75013", address: "Berges de Seine", style: "Live", zone: 4, vibe: "À LA COOL / BERGES", time: "17:00-23:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8315, lng: 2.3761 },
+            { id: 47, name: "Open Air Électro par Aztechno", arr: "75013", address: "25 rue de la Butte-aux-Cailles", style: "Techno / Electro DJ sets", zone: 6, vibe: "À LA COOL", time: "16:00-00:00", req: "Non", src: "Aztechno", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8288, lng: 2.3499 },
+            { id: 48, name: "Les Punks Parisiens prennent l'air", arr: "75013", address: "Spot 13 (Allée d'Ivry)", style: "Punk Rock Live (15 groupes)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "13:00-23:30", req: "Non", src: "Spot 13", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8234, lng: 2.3767 },
             // Zone 75014
-            { id: 49, name: "Concert de Musiques Traditionnelles", arr: "75014", address: "Kiosque du Parc Montsouris (2 rue Gazan)", style: "Folk / Traditionnel", zone: 6, vibe: "À LA COOL", time: "Après-midi", req: "Non", src: "Mazurcade", url: "", lat: 48.8224, lng: 2.3381 },
-            { id: 50, name: "Gospel sur le Parvis", arr: "75014", address: "Parvis de la Mairie du 14e", style: "Gospel (Hope Gospel Singers)", zone: 1, vibe: "STRUCTURÉ", time: "20:00-21:30", req: "Non", src: "Mairie 14e", url: "", lat: 48.8331, lng: 2.3256 },
+            { id: 49, name: "Concert de Musiques Traditionnelles", arr: "75014", address: "Kiosque du Parc Montsouris (2 rue Gazan)", style: "Folk / Traditionnel", zone: 6, vibe: "À LA COOL", time: "Après-midi", req: "Non", src: "Mazurcade", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8224, lng: 2.3381 },
+            { id: 50, name: "Gospel sur le Parvis", arr: "75014", address: "Parvis de la Mairie du 14e", style: "Gospel (Hope Gospel Singers)", zone: 1, vibe: "STRUCTURÉ", time: "20:00-21:30", req: "Non", src: "Mairie 14e", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8331, lng: 2.3256 },
             // Zone 75015
-            { id: 51, name: "CB Festival par VL Média", arr: "75015", address: "Parvis de la Mairie du 15e (31 rue Péclet)", style: "Electro / Tech (Tony Romera, Space 92)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:30", req: "Oui", src: "VL Média", url: "", lat: 48.8412, lng: 2.2998 },
-            { id: 52, name: "Fête d'été du Quartier Balard", arr: "75015", address: "Jardin Caroline Aigle", style: "Format Familial / Chorale", zone: 6, vibe: "À LA COOL", time: "15:00-18:00", req: "Non", src: "Makabane", url: "", lat: 48.8367, lng: 2.2748 },
-            { id: 53, name: "Lancement de 'Paris en Seine'", arr: "75015", address: "Bords de Seine du 15e", style: "Concerts & Carnaval Tropical", zone: 4, vibe: "BERGES & CANAUX", time: "Tout l'été", req: "Non", src: "Ville", url: "", lat: 48.8465, lng: 2.2798 },
+            { id: 51, name: "CB Festival par VL Média", arr: "75015", address: "Parvis de la Mairie du 15e (31 rue Péclet)", style: "Electro / Tech (Tony Romera, Space 92)", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-00:30", req: "Oui", src: "VL Média", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8412, lng: 2.2998 },
+            { id: 52, name: "Fête d'été du Quartier Balard", arr: "75015", address: "Jardin Caroline Aigle", style: "Format Familial / Chorale", zone: 6, vibe: "À LA COOL", time: "15:00-18:00", req: "Non", src: "Makabane", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8367, lng: 2.2748 },
+            { id: 53, name: "Lancement de 'Paris en Seine'", arr: "75015", address: "Bords de Seine du 15e", style: "Concerts & Carnaval Tropical", zone: 4, vibe: "BERGES & CANAUX", time: "Tout l'été", req: "Non", src: "Ville", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8465, lng: 2.2798 },
             // Zone 75016
-            { id: 41, name: "Joe & The Juice x Ed Banger Records", arr: "75016", address: "53 avenue Kléber", style: "Electro / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "Utilisateur", url: "", lat: 48.8688, lng: 2.2902 },
+            { id: 41, name: "Joe & The Juice x Ed Banger Records", arr: "75016", address: "53 avenue Kléber", style: "Electro / DJ set", zone: 1, vibe: "STRUCTURÉ", time: "17:00-22:00", req: "Non", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8688, lng: 2.2902 },
             // Zone 75019
-            { id: 19, name: "Buttes Chaumont Cookie Records", arr: "75019", address: "Parc des Buttes Chaumont", style: "House", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "12:00-23:00", req: "Oui", src: "paris.fr", url: "", lat: 48.8812, lng: 2.3846 },
-            { id: 20, name: "La Rotonde Stalingrad", arr: "75019", address: "Place de Stalingrad", style: "Techno", zone: 3, vibe: "STRUCTURÉ", time: "16:00-02:00", req: "Non", src: "lieu", url: "", lat: 48.8828, lng: 2.3694 },
-            { id: 21, name: "La Villette Square", arr: "75019", address: "Parc de la Villette", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-23:00", req: "Non", src: "paris.fr", url: "", lat: 48.8938, lng: 2.3902 },
-            { id: 42, name: "Cookie Records x Pavillon Puebla", arr: "75019", address: "Parc des Buttes-Chaumont (Pavillon Puebla)", style: "House / Disco / Open air", zone: 1, vibe: "STRUCTURÉ", time: "13:00-00:00", req: "Oui", src: "Utilisateur", url: "", lat: 48.8804, lng: 2.3831 },
+            { id: 19, name: "Buttes Chaumont Cookie Records", arr: "75019", address: "Parc des Buttes Chaumont", style: "House", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "12:00-23:00", req: "Oui", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8812, lng: 2.3846 },
+            { id: 20, name: "La Rotonde Stalingrad", arr: "75019", address: "Place de Stalingrad", style: "Techno", zone: 3, vibe: "STRUCTURÉ", time: "16:00-02:00", req: "Non", src: "lieu", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8828, lng: 2.3694 },
+            { id: 21, name: "La Villette Square", arr: "75019", address: "Parc de la Villette", style: "Multi styles", zone: 2, vibe: "OPEN AIR / STRUCTURÉ", time: "15:00-23:00", req: "Non", src: "paris.fr", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8938, lng: 2.3902 },
+            { id: 42, name: "Cookie Records x Pavillon Puebla", arr: "75019", address: "Parc des Buttes-Chaumont (Pavillon Puebla)", style: "House / Disco / Open air", zone: 1, vibe: "STRUCTURÉ", time: "13:00-00:00", req: "Oui", src: "Utilisateur", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8804, lng: 2.3831 },
             // Zone 75020
-            { id: 22, name: "Belleville Open Mic", arr: "75020", address: "Place de Belleville", style: "Rap / Jam", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8728, lng: 2.3782 },
-            { id: 23, name: "Ménilmontant Street Sound", arr: "75020", address: "Rue Oberkampf (Côté 20e)", style: "Rock / Live", zone: 6, vibe: "À LA COOL", time: "18:00-01:00", req: "Non", src: "terrain", url: "", lat: 48.8661, lng: 2.3887 },
+            { id: 22, name: "Belleville Open Mic", arr: "75020", address: "Place de Belleville", style: "Rap / Jam", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8728, lng: 2.3782 },
+            { id: 23, name: "Ménilmontant Street Sound", arr: "75020", address: "Rue Oberkampf (Côté 20e)", style: "Rock / Live", zone: 6, vibe: "À LA COOL", time: "18:00-01:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8661, lng: 2.3887 },
             
             // Banlieues & TBA Centraux
             { id: 43, name: "Radio Flouka x 306 Sound System", arr: "00000", address: "Location TBA (Annonce imminente)", style: "Sound system / Afro / Global", zone: 6, vibe: "À LA COOL", time: "Horaire non précisé", req: "Oui", src: "Shotgun", url: "https://shotgun.live/fr/events/radio-flouka-x-306-sound-system-community-gathering", lat: 48.8566, lng: 2.3522 },
-            { id: 24, name: "La Défense After Sounds", arr: "92000", address: "Parvis de La Défense", style: "Electro", zone: 2, vibe: "STRUCTURÉ / OPEN AIR", time: "18:00-02:00", req: "Non", src: "lieu", url: "", lat: 48.8927, lng: 2.2381 },
-            { id: 25, name: "Nanterre Open Stage", arr: "92000", address: "Nanterre Centre", style: "Live", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "", lat: 48.8916, lng: 2.2045 },
+            { id: 24, name: "La Défense After Sounds", arr: "92000", address: "Parvis de La Défense", style: "Electro", zone: 2, vibe: "STRUCTURÉ / OPEN AIR", time: "18:00-02:00", req: "Non", src: "lieu", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8927, lng: 2.2381 },
+            { id: 25, name: "Nanterre Open Stage", arr: "92000", address: "Nanterre Centre", style: "Live", zone: 6, vibe: "À LA COOL", time: "17:00-23:00", req: "Non", src: "terrain", url: "https://www.paris.fr/evenements/fete-de-la-musique-113303", lat: 48.8916, lng: 2.2045 },
             { id: 54, name: "Concerts Multiscènes de la Ville", arr: "92100", address: "Grand'Place / Espace Landowski / Parc de Billancourt", style: "Pop, Rock, Classique, Jazz", zone: 2, vibe: "OPEN AIR", time: "Après-midi & Soirée", req: "Non", src: "Conservatoire", url: "", lat: 48.8364, lng: 2.2389 },
             { id: 55, name: "Fête de la Musique à l'Église Sainte-Cécile", arr: "92100", address: "Église Sainte-Cécile de Boulogne", style: "Fanfare, Pop-Jazz, Set Électro (20h15) & Karaoké", zone: 1, vibe: "STRUCTURÉ", time: "Journée & Soirée", req: "Non", src: "Paroisse", url: "", lat: 48.8441, lng: 2.2471 },
             { id: 26, name: "Montreuil Backyard Sounds", arr: "93100", address: "Montreuil (Cours partagées)", style: "Hip-hop / Afro", zone: 6, vibe: "À LA COOL", time: "18:00-02:00", req: "Non", src: "terrain", url: "", lat: 48.8624, lng: 2.4411 },
